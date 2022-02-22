@@ -6,7 +6,6 @@
 '''
 
 from collections import deque
-from tabnanny import check
 
 palindrome = deque()
 
