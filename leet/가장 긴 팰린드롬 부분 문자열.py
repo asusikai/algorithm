@@ -10,7 +10,7 @@ from tabnanny import check
 
 palindrome = deque()
 
-inputs = "cbbd"
+inputs = "12345678987654321"
 
 def checker(string, front, end):
     
@@ -39,5 +39,4 @@ for i in range(len(inputs)):
     final = final if len(final) > len(palindrome) else palindrome.copy()
     palindrome.clear()
 
-print(final)
-    
+print("".join(final))
