@@ -1,9 +1,11 @@
-test_dict = dict()
+left = 1
 
-test_dict['3'] = 5
+right = left
 
-print(test_dict)
+print(id(right))
+print(id(left))
 
-test_dict['3'] = 12
+left+=1
 
-print(test_dict)
+print(right)
+print(left)
