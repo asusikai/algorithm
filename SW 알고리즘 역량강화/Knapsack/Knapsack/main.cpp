@@ -31,8 +31,49 @@
 /////////////////////////////////////////////////////////////////////////////////////////////
 
 #include<iostream>
+#include<string.h>
+#define MAX_W 1001
+#define MAX_N 101
+#define WEIGHT 0
+#define VALUE 1
 
 using namespace std;
+
+int map[MAX_N][MAX_W];
+int items[MAX_N][2];
+
+int init() {
+
+	fill(&map[0][0], &map[MAX_N][MAX_W], 0);
+	fill(&items[0][0], &items[MAX_N][2], 0);
+}
+
+void max_value(int k, int N) {
+
+	for (int i = 1; i <= N; i++) {
+		for (int w = 1; w <= k; w++) {
+
+			if (items[i][WEIGHT] <= w) {
+
+				if (items[i][VALUE] + map[i - 1][w - items[i][WEIGHT]] > map[i - 1][w]) {
+
+					map[i][w] = items[i][VALUE] + map[i - 1][w - items[i][WEIGHT]];
+				}
+
+				else {
+
+					map[i][w] = map[i - 1][w];
+				}
+
+			}
+
+			else {
+				map[i][w] = map[i - 1][w];
+			}
+
+		}
+	}
+}
 
 int main(int argc, char** argv)
 {
@@ -57,16 +98,17 @@ int main(int argc, char** argv)
 		int N, k;
 		cin >> N >> k;
 
-		int item[100][2];
+		init();
 
-		for (int i = 0; i < N; i++) {
-			cin >> item[i][0] >> item[i][1];
+		for (int i = 1; i <= N; i++) {
+			for (int j = 0; j < 2; j++) {
+				cin >> items[i][j];
+			}
 		}
 
-		for (int i = 0; i < N; i++) {
-			for(int j=0;)
+		max_value(k, N);
 
-		}
+		cout << "#" << test_case << " " << map[N][k] << endl;
 
 
 	}
