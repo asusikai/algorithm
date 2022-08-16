@@ -29,15 +29,59 @@
 // cout << var;                         // 문자열 1개 출력하는 예제
 // cout << AB;                          // long long 변수 1개 출력하는 예제
 /////////////////////////////////////////////////////////////////////////////////////////////
+#define HASH_VALUE1 11
+#define HASH_VALUE2 23
 
 #include<iostream>
 #include<string>
-
+#include<stdio.h>
 using namespace std;
 
-string s;
-string t;
+int pow(int x, int n) {
+	for (int i = 1; i < n; i++) {
+		x *= x;
+	}
 
+	return x;
+}
+
+int find_match(string t, string p) {
+
+	int t_size = t.size();
+	int p_size = p.size();
+
+	int Count = 0;
+
+	int t_val1 = 0;
+	int p_val1 = 0;
+	int t_val2 = 0;
+	int p_val2 = 0;
+
+	for (int i = 0; i < p_size; i++) {
+
+		t_val1 = t_val1 * HASH_VALUE1 + int(t[i]);
+		p_val1 = p_val1 * HASH_VALUE1 + int(p[i]);
+
+		t_val2 = t_val2 * HASH_VALUE2 + int(t[i]);
+		p_val2 = p_val2 * HASH_VALUE2 + int(p[i]);
+	}
+
+	if (t_val1 == p_val1 && t_val2 == p_val2) {
+		Count++;
+	}
+
+	for (int i = p_size; i < t_size; i++) {
+		
+		t_val1 = (t_val1 - int(t[i-p_size]) * pow(HASH_VALUE1, p_size - 1)) * HASH_VALUE1 + int(t[i]);
+		t_val2 = (t_val2 - int(t[i-p_size]) * pow(HASH_VALUE2, p_size - 1)) * HASH_VALUE2 + int(t[i]);
+
+		if (t_val1 == p_val1 && t_val2 == p_val2) {
+
+			Count++;
+		}
+	}
+	return Count;
+}
 
 int main(int argc, char** argv)
 {
@@ -59,12 +103,14 @@ int main(int argc, char** argv)
 	*/
 	for (test_case = 1; test_case <= T; ++test_case)
 	{
-		s = "";
-		t = "";
+		string text, pattern;
 
-		cin >> s >> t;
+		cin >> text >> pattern;
 
+		int result = find_match(text, pattern);
 
+		//cout << "#" << test_case << " " << result << endl;
+		printf("#%d %d\n", test_case, result);
 
 	}
 	return 0;//정상종료시 반드시 0을 리턴해야합니다.
