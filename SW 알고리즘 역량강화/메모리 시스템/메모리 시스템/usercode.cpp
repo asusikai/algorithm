@@ -2,8 +2,6 @@
 #include<utility>
 #include<algorithm>
 
-#include<iostream>
-
 using namespace std;
 
 int MEMORY_SIZE;
@@ -26,23 +24,23 @@ void init(int N) {
 	allocated.clear();
 	empty_space.push_back(make_pair(0, N));
 
-	cout << "init\nmemory size:" << N << endl;
+	//cout << "init\nmemory size:" << N << endl;
 
 	return;
 }
 
 int allocate(int mSize) {
 
-	cout << "=====fin=====" << endl;
-
 	sort(empty_space.begin(), empty_space.end(), compare);
 
+	/*
 	cout << "sorted empty_space before allocate" << endl;
 	for (int i = 0; i < empty_space.size(); i++) {
 		cout << empty_space[i].first << " " << empty_space[i].second << endl;
 	}
 
 	cout << "=====fin=====" << endl;
+	*/
 	int min_size = MEMORY_SIZE+1, min_index = MEMORY_SIZE+1;
 
 	int e_index;
@@ -56,7 +54,9 @@ int allocate(int mSize) {
 		}
 	}
 
-	if (min_size != MEMORY_SIZE && min_index != MEMORY_SIZE) {
+	if (min_size != MEMORY_SIZE+1 || min_index != MEMORY_SIZE+1) {
+
+		allocated.push_back(make_pair(min_index, mSize));
 		if (mSize == min_size) {
 			empty_space.erase(empty_space.begin() + e_index);
 		}
@@ -66,17 +66,27 @@ int allocate(int mSize) {
 			empty_space[e_index].second -= mSize;
 		}
 
+		//cout << "allocate result: "<<min_index << endl;
 		return min_index;
 
 	}
 
-	cout << "allocate result: -1" << endl;
+	//cout << "allocate result: -1" << endl;
 
 	return -1;
 	
 }
 
 int release(int mAddr) {
+
+	/*
+	cout << "sorted allocated before release" << endl;
+	for (int i = 0; i < allocated.size(); i++) {
+		cout << allocated[i].first << " " << allocated[i].second << endl;
+	}
+
+	cout << "=====fin=====" << endl;
+	*/
 
 	for (int i = 0; i < allocated.size(); i++) {
 		if (allocated[i].first == mAddr) {
@@ -102,12 +112,12 @@ int release(int mAddr) {
 				}
 			}
 
-			cout << "release result: " << return_size << endl;
+			//cout << "release result: " << return_size << endl;
 			return return_size;
 		}
 	}
 
-	cout << "release result: -1" << endl;
+	//cout << "release result: -1" << endl;
 
 	return -1;
 }
