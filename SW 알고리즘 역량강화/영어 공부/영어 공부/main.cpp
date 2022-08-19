@@ -38,7 +38,7 @@
 
 using namespace std;
 
-int study_count[MAX_DATE + 2*MAX_P+1];
+int study_count[MAX_DATE + 2 * MAX_P + 1];
 int study_date[MAX_N];
 int first_date;
 int last_date;
@@ -46,8 +46,8 @@ int N, p;
 int max_val;
 
 void init() {
-	
-	for (int i = 0; i < MAX_DATE + 2*MAX_P + 1; i++) {
+
+	for (int i = 0; i < MAX_DATE + 2 * MAX_P + 1; i++) {
 		study_count[i] = 0;
 	}
 
@@ -78,24 +78,39 @@ void find_max_date(int first, int last) {
 
 	int mid_date = first + (last - first) / 2;
 
-	int x = 0;
+	int x = p;
 
-	while (true) {
-		if (study_count[mid_date-1 + x] >= x + study_count[mid_date-1] - p) {
-			x++;
-		}
-		else {
-			break;
+	if (mid_date == 0) {
+		while (true) {
+			if (study_count[x - 1] >= x - p) {
+				x++;
+			}
+			else {
+				break;
+			}
 		}
 	}
-	max_val = max(max_val, x-1);
+
+	else {
+		while (true) {
+			if (study_count[mid_date - 1 + x] >= x + study_count[mid_date - 1] - p) {
+				x++;
+			}
+			else {
+				break;
+			}
+		}
+	}
+
+	
+	max_val = max(max_val, x - 1);
 
 	if (study_count[mid_date] >= N / 2) {
 		find_max_date(first, mid_date-1);
 	}
 
 	else {
-		find_max_date(mid_date+1, last);
+		find_max_date(mid_date + 1, last);
 	}
 
 }
@@ -119,7 +134,7 @@ int main(int argc, char** argv)
 		}
 
 		first_date = study_date[0] > p ? study_date[0] - p : 0;
-		last_date = study_date[N -1] + p;
+		last_date = study_date[N - 1] + p;
 		fill_study_count();
 		find_max_date(first_date, last_date);
 
