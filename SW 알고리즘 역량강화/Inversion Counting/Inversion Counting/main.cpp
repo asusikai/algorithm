@@ -38,7 +38,7 @@ constexpr size_t MAX_N = 100001;
 using namespace std;
 
 int arr[MAX_N], buffer[MAX_N];
-int cnt;
+unsigned long long cnt;
 
 void merge(int* const begin, int* const mid, int* const end) {
 	int* begin1 = begin;
