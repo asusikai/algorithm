@@ -31,7 +31,8 @@
 /////////////////////////////////////////////////////////////////////////////////////////////
 
 #include<iostream>
-#include<climits>
+
+#include<algorithm>
 
 using namespace std;
 
@@ -43,16 +44,15 @@ unsigned long long fpow(unsigned long long N, unsigned long long _sum) {
 	else {
 		unsigned long long x = fpow(N / 2, _sum);
 		if (N % 2 == 0) {
-			if (x >= INT_MAX / x) {
-				x = x % _sum;
-			}
+
+			x = x % _sum;
+
 			return (x * x)%_sum;
 		}
 
 		else {
-			if (x >= INT_MAX / x) {
-				x = x % _sum;
-			}
+			x = x % _sum;
+
 			return (x * x * (2%_sum))%_sum;
 		}
 	}
@@ -84,44 +84,9 @@ int main(int argc, char** argv)
 		cin >> A >> B >> K;
 
 		unsigned long long _sum = A + B;
-		unsigned long long check;
+		//unsigned long long check;
 		int cnt = 0;
-		/*
-		if (A == B) {
-			cout << "#" << test_case << " 0" << "\n";
-		}
-
-		else {
-			if (A > B) {
-				check = _sum / B;
-				if ((_sum % B == 0) && (check & (check - 1)) == 0) {
-					while (check > 1) {
-						check >> 1;
-						cnt++;
-					}
-				}
-
-				if (cnt - 1 <= K) {
-					cout << "#" << test_case << " 0" << "\n";
-				}
-
-			}
-
-			else {
-				check = _sum / A;
-				if ((_sum % A == 0) && (check & (check - 1)) == 0) {
-					while (check > 1) {
-						check >> 1;
-						cnt++;
-					}
-				}
-
-				if (cnt - 1 <= K) {
-					cout << "#" << test_case << " 0" << "\n";
-				}
-			}
-		}
-		*/
+		
 
 		unsigned long long result1 = (A%_sum * (fpow(K, _sum) % _sum)) % _sum;
 		unsigned long long result2 = (B%_sum * (fpow(K, _sum) % _sum)) % _sum;
