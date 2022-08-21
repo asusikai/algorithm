@@ -105,7 +105,7 @@ void find_max_date(int first, int last) {
 	
 	max_val = max(max_val, x - 1);
 
-	if (study_count[mid_date] >= N / 2) {
+	if ((study_count[mid_date]*2) >= N) {
 		find_max_date(first, mid_date-1);
 	}
 
