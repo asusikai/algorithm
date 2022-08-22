@@ -1,62 +1,87 @@
-#include <iostream>
-#include <list>
+#include<iostream>
+#include<list>
+
 using namespace std;
 
-int N;
-int target;
-int commandNo;
-char cType;
-list <int> li;
-auto itr = li.begin();
-int main() {
-	for (int tc = 1; tc <= 10; tc++) {
-		li.clear();//리스트 초기화
-		itr = li.begin();
-		cin >> N;
-		for (int i = 0; i < N; i++) {
-			cin >> target;
-			li.push_back(target);
-		}
-		cin >> commandNo;
-		for (int cc = 0; cc < commandNo; cc++) {
-			cin >> cType;
-			int x, y, s;
-			if (cType == 'I') {
+list<int> code;
 
-				itr = li.begin();
+int N, M;
+int x, y, s;
+char order;
+
+list<int>::iterator iter;
+
+int main(int argc, char** argv)
+{
+	int test_case;
+	int T = 10;
+
+	for (test_case = 1; test_case <= T; ++test_case)
+	{
+		code.clear();
+
+		cin >> N;
+
+		for (int i = 0; i < N; i++) {
+			cin >> s;
+			code.push_back(s);
+		}
+
+		cin >> M;
+
+		for (int i = 0; i < M;i++) {
+			cin >> order;
+			if (order == 'I') {
+				cin >> x >> y;
+
+				iter = code.begin();
+
+				for (int j = 0; j < x; j++) {
+					iter++;
+				}
+
 				list<int> temp;
 
-				cin >> x >> y;//앞에서부터 x의 위치 바로 다음에 y개 숫자 삽입
-				for (int i = 0; i < x; i++) itr++;
-				for (int i = 0; i < y; i++) {
+				for (int j = 0; j < y; j++) {
 					cin >> s;
 					temp.push_back(s);
 				}
-				li.splice(itr, temp); //itr위치에 temp끼워넣기
+
+				code.insert(iter, temp.begin(), temp.end());
 			}
-			else if (cType == 'D') {
-				itr = li.begin();
-				cin >> x >> y;//앞에서부터 x의 위치 바로 다음부터 y개 숫자 삭제
-				for (int i = 0; i < x; i++)itr++;
-				for (int i = 0; i < y; i++) itr = li.erase(itr); //erase는 itr을 return 한다
-			}
-			else if (cType == 'A') {
-				cin >> y;//암호문 맨 뒤에 y개 숫자 덧붙인다.
-				for (int i = 0; i < y; i++) {
-					cin >> s;
-					li.push_back(s);
+
+			else if (order == 'D') {
+				cin >> x >> y;
+				iter = code.begin();
+
+				for (int j = 0; j < x; j++) {
+					iter++;
+				}
+
+				for (int j = 0; j < y; j++) {
+					iter = code.erase(iter);
 				}
 			}
+
+			else if (order == 'A') {
+				cin >> y;
+				iter = code.end();
+				iter--;
+				list<int> temp;
+				for (int j = 0; j < y; j++) {
+					cin >> s;
+					temp.push_back(s);
+				}
+				code.insert(iter, temp.begin(), temp.end());
+			}
 		}
 
-		itr = li.begin();
-		printf("#%d ", tc);
+		iter = code.begin();
+		cout << "#" << test_case << " ";
 		for (int i = 0; i < 10; i++) {
-			printf("%d ", *(itr++));
+			cout << *(iter++) << " ";
 		}
-		printf("\n");
-
+		cout << "\n";
 	}
-
-	return 0;
+	return 0;//정상종료시 반드시 0을 리턴해야합니다.
 }
