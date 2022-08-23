@@ -1,123 +1,75 @@
-#include<vector>
-#include<utility>
+#include<map>
+#include<set>
 #include<algorithm>
 
 using namespace std;
 
 int MEMORY_SIZE;
-vector<pair<int, int>> empty_space;
-vector<pair<int, int>> allocated;
-
-bool compare(pair<int, int>& front, pair<int, int>& back) {
-
-	if (front.second > back.second) return front.second < back.second;
-
-	else if (front.second == back.second) return front.first < back.first;
-
-	else return front.first < back.first;
-}
-
+map<int, int> allocated;
+set<pair<int, int>> empty_space;
 void init(int N) {
 
 	MEMORY_SIZE = N;
 	empty_space.clear();
 	allocated.clear();
-	empty_space.push_back(make_pair(0, N));
-
-	//cout << "init\nmemory size:" << N << endl;
+	empty_space.insert(make_pair(N, 0));
 
 	return;
 }
 
 int allocate(int mSize) {
+	auto iter = empty_space.lower_bound({ mSize, 0 });
+	if (iter == empty_space.end()) return -1;
+	int size = iter->first, address = iter->second;
+	empty_space.erase(iter);
 
-	sort(empty_space.begin(), empty_space.end(), compare);
-
-	/*
-	cout << "sorted empty_space before allocate" << endl;
-	for (int i = 0; i < empty_space.size(); i++) {
-		cout << empty_space[i].first << " " << empty_space[i].second << endl;
+	allocated[address] = mSize;
+	if (size > mSize) {
+		empty_space.emplace(size - mSize, address + mSize);
 	}
 
-	cout << "=====fin=====" << endl;
-	*/
-	int min_size = MEMORY_SIZE+1, min_index = MEMORY_SIZE+1;
-
-	int e_index;
-	for (int i = 0; i < empty_space.size(); i++) {
-		if (mSize <= empty_space[i].second && min_size > empty_space[i].second) {
-			
-			min_size = empty_space[i].second;
-			min_index = empty_space[i].first;
-			e_index = i;
-
-		}
-	}
-
-	if (min_size != MEMORY_SIZE+1 || min_index != MEMORY_SIZE+1) {
-
-		allocated.push_back(make_pair(min_index, mSize));
-		if (mSize == min_size) {
-			empty_space.erase(empty_space.begin() + e_index);
-		}
-
-		else {
-			empty_space[e_index].first += mSize;
-			empty_space[e_index].second -= mSize;
-		}
-
-		//cout << "allocate result: "<<min_index << endl;
-		return min_index;
-
-	}
-
-	//cout << "allocate result: -1" << endl;
-
-	return -1;
-	
+	return address;
 }
 
 int release(int mAddr) {
+	auto iter = allocated.find(mAddr);
+	if (iter == allocated.end()) return -1;
 
-	/*
-	cout << "sorted allocated before release" << endl;
-	for (int i = 0; i < allocated.size(); i++) {
-		cout << allocated[i].first << " " << allocated[i].second << endl;
+	int size = iter->second;
+	int result = size;
+
+	iter = allocated.erase(iter);
+	int after_size = 0;
+
+	if (iter != allocated.end()) {
+		after_size = iter->first - (mAddr + size);
+	}
+	else {
+		after_size = MEMORY_SIZE - (mAddr + size);
 	}
 
-	cout << "=====fin=====" << endl;
-	*/
-
-	for (int i = 0; i < allocated.size(); i++) {
-		if (allocated[i].first == mAddr) {
-			int return_size = allocated[i].second;
-			empty_space.push_back(allocated[i]);
-			allocated.erase(allocated.begin() + i);
-
-			sort(empty_space.begin(), empty_space.end());
-			int index = 0;
-			while (true) {
-				
-				if (index >= empty_space.size()-1) {
-					break;
-				}
-
-				if (empty_space[index].first + empty_space[index].second == empty_space[index + 1].first) {
-					empty_space[index].second += empty_space[index + 1].second;
-					empty_space.erase(empty_space.begin() + index + 1);
-				}
-
-				else {
-					index++;
-				}
-			}
-
-			//cout << "release result: " << return_size << endl;
-			return return_size;
-		}
+	if (after_size > 0) {
+		empty_space.erase({ after_size, mAddr + size });
+		size += after_size;
 	}
 
-	//cout << "release result: -1" << endl;
+	int before_size = 0;
+	if (iter != allocated.begin()) {
+		--iter;
+		before_size = mAddr - (iter->first + iter->second);
+	}
+	else {
+		before_size = mAddr;
+	}
 
-	return -1;
+	if (before_size > 0) {
+		empty_space.erase({ before_size, mAddr - before_size });
+		size += before_size;
+
+		mAddr -= before_size;
+	}
+
+	empty_space.emplace(size, mAddr);
+
+	return result;
 }
