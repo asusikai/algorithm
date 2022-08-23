@@ -1,31 +1,47 @@
 #include<iostream>
 #include<queue>
 
-#define MAX_N 10001
-
+#define MAX_N 100001
+#define MAX_HEIGHT 19
 using namespace std;
 
 int depth[MAX_N];
-int parents[MAX_N][15];
+int parents[MAX_N][MAX_HEIGHT];
 
 int N;
 int node_num;
 int height;
+
+bool visited[MAX_N] = { false };
+queue<int> q;
+queue<int> result;
 
 void init() {
 
 	for (int i = 0; i < MAX_N; i++) {
 		depth[i] = 0;
 	}
-	depth[1] = 1;
 
 	for (int i = 0; i < MAX_N; i++) {
-		for (int j = 0; j < 15; j++) {
+		for (int j = 0; j < MAX_HEIGHT; j++) {
 			parents[i][j] = 0;
 		}
 	}
 
+	for (int i = 0; i < MAX_N; i++) {
+		visited[i] = false;
+	}
+
+	while (!q.empty()) {
+		q.pop();
+	}
+
+	while (!result.empty()) {
+		result.pop();
+	}
+
 	height = 1;
+	depth[1] = 1;
 }
 
 void set_height(int child, int parent) {
@@ -34,29 +50,28 @@ void set_height(int child, int parent) {
 }
 
 void set_parent(int child, int parent) {
-	parents[parent][0] = child;
+	parents[child][0] = parent;
 }
 
 void fill_parents() {
-	for (int i = 1; i < height; i++) {
-		for (int j = 1; j < N + 1; j++) {
+	for (int i = 1; i <= height; i++) {
+		for (int j = 0; j <= N; j++) {
 			parents[j][i] = parents[parents[j][i - 1]][i - 1];
 		}
 	}
 }
 
 int LCA(int a, int b) {
-	int ad = depth[a];
-	int bd = depth[b];
-
-	if (ad < bd) {
-		int temp = ad;
-		ad = bd;
-		bd = temp;
+	
+	if (depth[a] < depth[b]) {
+		int temp = a;
+		a = b;
+		b = temp;
 	}
 
-	for (int i = height-1; i >= 0; i--) {
-		if (ad - bd >= (1 << i)) {
+	for (int i = height; i >= 0; i--) {
+		long long diff = depth[a] - depth[b];
+		if (diff >= (1 << i)) {
 			a = parents[a][i];
 		}
 	}
@@ -69,27 +84,26 @@ int LCA(int a, int b) {
 			b = parents[b][i];
 		}
 	}
-	// 반복이 끝났으면 공통된 조상노드 직전까지 온 상태
 
 	return parents[a][0];
 }
 
 queue<int> bfs() {
-	bool visited[MAX_N];
-	queue<int> q;
-	queue<int> result;
+
+	int f;
+
 	q.push(1);
-	
-	int front;
+	visited[1] = true;
+
 	while (!q.empty()) {
-		front = q.front();
+		f = q.front();
 		q.pop();
-		result.push(front);
-		visited[front] = true;
+		result.push(f);
 		
-		for (int i = 0; i < MAX_N; i++) {
-			if (parents[i][0] == front) {
+		for (int i = 1; i <= N ; i++) {
+			if (parents[i][0] == f && !visited[i]) {
 				q.push(i);
+				visited[i] = true;
 			}
 		}
 	}
@@ -110,25 +124,26 @@ int main(int argc, char** argv)
 		init();
 
 		cin >> N;
-		for (int i = 2; i <= N; i++) {
+11;		for (int i = 2; i <= N; i++) {
 			cin >> node_num;
 			set_parent(i, node_num);
 			set_height(i, node_num);
 		}
+		
+		fill_parents();
+		bfs();
+		long long route = 0;
+		int f = result.front();
+		result.pop();
+		int end, lca;
+		while(!result.empty()) {
 
-		queue<int> res = bfs();
-
-		int route = 0;
-		int front = res.front();
-		res.pop();
-		int end;
-		for (int i = 1; i < N; i++) {
-
-			end = res.front();
-			res.pop();
-
-			route += depth[front] - depth[LCA(front, end)] + depth[end] - depth[LCA(front, end)];
-			front = end;
+			end = result.front();
+			result.pop();
+			lca = LCA(f, end);
+			route += (depth[f] - depth[lca]);
+			route += (depth[end] - depth[lca]);
+			f = end;
 		}
 
 		cout << "#" << test_case << " " << route << endl;
